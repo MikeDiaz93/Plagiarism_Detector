@@ -10,7 +10,11 @@ import pandas as pd
 from sklearn.externals import joblib
 ## TODO: Import any additional libraries you need to define a model
 
+#from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
+
+
+
 
 # Provided model load function
 def model_fn(model_dir):
@@ -42,7 +46,10 @@ if __name__ == '__main__':
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     
     ## TODO: Add any additional arguments that you will need to pass into your model
-    parser.add_argument('--n-estimators', type=int, default=10)
+    parser.add_argument('--n-estimators', type=int, default=200)
+    parser.add_argument('--max_depth', type=int, default=100)
+ 
+
     
     # args holds all passed-in arguments
     args = parser.parse_args()
@@ -56,11 +63,15 @@ if __name__ == '__main__':
     train_x = train_data.iloc[:,1:]
     
     
+    
     ## --- Your code here --- ##
     
 
     ## TODO: Define a model 
-    model = RandomForestClassifier(n_estimators = args.n_estimators, criterion = 'gini', class_weight = 'balanced_subsample')
+    model = RandomForestClassifier(n_estimators = args.n_estimators,  max_depth= args.max_depth,
+                                   criterion = 'entropy', max_features= 'auto',bootstrap= True, 
+                                   oob_score= False, n_jobs=1, random_state= 42, verbose=0, warm_start= True,
+                                   class_weight= 'balanced_subsample') 
     
     
     ## TODO: Train the model
